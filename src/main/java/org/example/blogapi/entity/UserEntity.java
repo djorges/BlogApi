@@ -41,4 +41,7 @@ public class UserEntity {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roles = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<PostEntity> posts = new HashSet<>();
 }

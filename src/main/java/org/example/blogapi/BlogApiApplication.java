@@ -63,7 +63,7 @@ public class BlogApiApplication {
             // Create USERS
             UserEntity userJoe = UserEntity.builder()
                     .username("joe")
-                    .password("2659999")
+                    .password("$2a$10$4ATFsremuqgDueJ15euXieU.l69Qkt7AY/N0ERk0PAgA/5Ikb12EK")
                     .isEnabled(true)
                     .accountNoExpired(true)
                     .accountNoLocked(true)
@@ -72,7 +72,7 @@ public class BlogApiApplication {
                     .build();
             UserEntity userJack = UserEntity.builder()
                     .username("jack")
-                    .password("1133333")
+                    .password("$2a$10$QAzl5TaO7CW7z/N6.51CzOl2e.dtXw6WXBsZUmSzjwiL2xjQb74KG")
                     .isEnabled(true)
                     .accountNoExpired(true)
                     .accountNoLocked(true)
@@ -81,7 +81,7 @@ public class BlogApiApplication {
                     .build();
             UserEntity userSara = UserEntity.builder()
                     .username("sara")
-                    .password("2112233")
+                    .password("$2a$10$ll.V.joApkvzVhdrQkXYDOVvshvilEB2t197hDyf8N9yV6cFitVtO")
                     .isEnabled(true)
                     .accountNoExpired(true)
                     .accountNoLocked(true)
@@ -90,7 +90,7 @@ public class BlogApiApplication {
                     .build();
             UserEntity userLucas = UserEntity.builder()
                     .username("lucas")
-                    .password("134555")
+                    .password("$2a$10$QwDpe3sSi43YiTyVQobv8Oyh/nup2b0SKD3fkKD7Xq4MYdNIp43my")
                     .isEnabled(true)
                     .accountNoExpired(true)
                     .accountNoLocked(true)
