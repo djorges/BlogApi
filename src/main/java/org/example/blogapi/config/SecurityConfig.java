@@ -46,9 +46,10 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http-> {
-                    //TODO:
-                    http.requestMatchers(HttpMethod.GET, "/auth/hello").permitAll();
-                    http.requestMatchers(HttpMethod.GET, "/auth/hello-secured").hasAuthority("REFACTOR");
+                    http.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();
+
+                    http.requestMatchers(HttpMethod.GET, "/home/hello").permitAll();
+                    http.requestMatchers(HttpMethod.GET, "/home/hello-secured").hasAnyAuthority("REFACTOR");
 
                     http.anyRequest().denyAll();
                 })
