@@ -24,6 +24,13 @@ public class JwtUtils {
     @Value("${security.jwt.user.generator}")
     private String userGenerator;
 
+    /**
+     * Creates a JWT (JSON Web Token) for the authenticated user.
+     *
+     * @param authentication The Authentication object representing the authenticated user.
+     * @return A JWT token as a String.
+     * @throws IllegalArgumentException If the authentication object does not contain valid principal or authorities.
+     */
     public String createToken(Authentication authentication){
         Algorithm algorithm = Algorithm.HMAC256(privateKey);
 
@@ -46,6 +53,13 @@ public class JwtUtils {
         return jwtToken;
     }
 
+    /**
+     * Validates and decodes a JWT (JSON Web Token) using the provided token string.
+     *
+     * @param token The JWT token to validate and decode.
+     * @return The decoded JWT object if valid.
+     * @throws JWTVerificationException If the token is invalid or not authorized.
+     */
     public DecodedJWT validateToken(String token){
         try{
             Algorithm algorithm = Algorithm.HMAC256(privateKey);

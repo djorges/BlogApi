@@ -1,6 +1,7 @@
 package org.example.blogapi.controller;
 
 import jakarta.validation.Valid;
+import org.example.blogapi.dto.AuthCreateUserRequest;
 import org.example.blogapi.dto.AuthLoginRequest;
 import org.example.blogapi.dto.AuthResponse;
 import org.example.blogapi.service.UserDetailServiceImpl;
@@ -15,6 +16,14 @@ public class AuthController {
 
     @Autowired
     private UserDetailServiceImpl userDetailService;
+
+    @PostMapping("/sign-up")
+    public ResponseEntity<AuthResponse> register(
+        @RequestBody @Valid AuthCreateUserRequest authCreateUserRequest
+    ){
+        AuthResponse authResponse = userDetailService.createUser(authCreateUserRequest);
+        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
+    }
 
     @PostMapping("/log-in")
     public ResponseEntity<AuthResponse> login(

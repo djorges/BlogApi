@@ -1,9 +1,12 @@
 package org.example.blogapi.service;
 
 import lombok.val;
+import org.example.blogapi.dto.AuthCreateUserRequest;
 import org.example.blogapi.dto.AuthLoginRequest;
 import org.example.blogapi.dto.AuthResponse;
+import org.example.blogapi.entity.RoleEntity;
 import org.example.blogapi.entity.UserEntity;
+import org.example.blogapi.repository.IRoleRepository;
 import org.example.blogapi.repository.IUserRepository;
 import org.example.blogapi.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +22,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
     @Autowired
-    private IUserRepository repository;
+    private IUserRepository userRepository;
+
+    @Autowired
+    private IRoleRepository roleRepository;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -42,16 +47,12 @@ public class UserDetailServiceImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        //Get username, password, roles, permissions from db
-        UserEntity user = repository.findByUsername(username).orElseThrow(
-                () -> new UsernameNotFoundException("User "+username+" does not exists")
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() ->
+            new UsernameNotFoundException("User "+username+" does not exists")
         );
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-        user.getRoles().forEach(
-            role -> authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getRoleEnum().name()))
-        );
+        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getRoleEnum().name())));
         user.getRoles().stream()
                 .flatMap(role -> role.getPermissionList().stream())
                 .forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getName())));
@@ -104,5 +105,46 @@ public class UserDetailServiceImpl implements UserDetailsService {
         }
 
         return new UsernamePasswordAuthenticationToken(userDetails.getPassword(), userDetails.getPassword(), userDetails.getAuthorities());
+    }
+
+    public AuthResponse createUser(AuthCreateUserRequest authCreateUserRequest) {
+        val username = authCreateUserRequest.username();
+        val password = authCreateUserRequest.password();
+        val roleRequest = authCreateUserRequest.roleRequest().roleListName();
+
+        Set<RoleEntity> roleEntitySet = new HashSet<>(roleRepository.findRoleEntitiesByRoleEnumIn(roleRequest));
+        if(roleEntitySet.isEmpty()){
+            throw new IllegalArgumentException("The roles specified does not exists");
+        }
+
+        val userEntity = UserEntity.builder()
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .roles(roleEntitySet)
+                .isEnabled(true)
+                .accountNoLocked(true)
+                .accountNoExpired(true)
+                .build();
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new IllegalArgumentException("The username specified already exists");
+        }
+        val savedUserEntity = userRepository.save(userEntity);
+
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        savedUserEntity.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getRoleEnum().name())));
+        savedUserEntity.getRoles().stream()
+                .flatMap(role -> role.getPermissionList().stream())
+                .forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getName())));
+
+        val accessToken = jwtUtils.createToken(
+            new UsernamePasswordAuthenticationToken(savedUserEntity.getUsername(), savedUserEntity.getPassword(), authorities)
+        );
+
+        return new AuthResponse(
+            savedUserEntity.getUsername(),
+            "User created successfully",
+            accessToken,
+            true
+        );
     }
 }

@@ -41,8 +41,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
             val authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
 
             val context = SecurityContextHolder.getContext();
-            val authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
-            context.setAuthentication(authentication);
+            context.setAuthentication(new UsernamePasswordAuthenticationToken(username, null, authorities));
             SecurityContextHolder.setContext(context);
         }
 
