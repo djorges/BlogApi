@@ -1,2 +1,2 @@
 # BlogApi
-Website
+Main Application
