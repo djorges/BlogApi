@@ -31,7 +31,7 @@ public class CommentEntity {
     @Column(unique = true, nullable = false)
     private String url;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private PostEntity post;
 }

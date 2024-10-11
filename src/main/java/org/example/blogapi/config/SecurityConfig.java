@@ -46,11 +46,13 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http-> {
+                    //
                     http.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();
 
                     http.requestMatchers(HttpMethod.GET, "/home/hello").permitAll();
                     http.requestMatchers(HttpMethod.GET, "/home/hello-secured").hasAnyAuthority("REFACTOR");
 
+                    //
                     http.anyRequest().denyAll();
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)

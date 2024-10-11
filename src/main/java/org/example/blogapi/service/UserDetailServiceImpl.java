@@ -82,7 +82,12 @@ public class UserDetailServiceImpl implements UserDetailsService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         val accessToken = jwtUtils.createToken(authentication);
 
-        return new AuthResponse(username,"User logged successfully",accessToken, true);
+        return new AuthResponse(
+                username,
+                "User logged successfully",
+                accessToken,
+                true
+        );
     }
 
     /**
@@ -114,7 +119,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
         Set<RoleEntity> roleEntitySet = new HashSet<>(roleRepository.findRoleEntitiesByRoleEnumIn(roleRequest));
         if(roleEntitySet.isEmpty()){
-            throw new IllegalArgumentException("The roles specified does not exists");
+            throw new IllegalArgumentException("The specified roles do not exists");
         }
 
         val userEntity = UserEntity.builder()
@@ -126,7 +131,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 .accountNoExpired(true)
                 .build();
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("The username specified already exists");
+            throw new IllegalArgumentException("The specified username already exists");
         }
         val savedUserEntity = userRepository.save(userEntity);
 
